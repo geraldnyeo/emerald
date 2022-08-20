@@ -1,0 +1,56 @@
+***BROWNIE***
+https://www.youtube.com/watch?v=M576WGiDBdQ
+https://n4n0b1t3.medium.com/running-brownie-on-windows-in-a-virtual-environment-without-encountering-cytoolz-errors-d0095fad905
+ - Come back here if ganache giving problems later...
+https://eth-brownie.readthedocs.io/en/stable/core-contracts.html#:~:text=Working%20with%20Contracts-,Deploying%20Contracts,used%20to%20deploy%20new%20contracts.
+ - How to interact with deployed contracts
+
+***SOLIDITY***
+https://ethereum.stackexchange.com/questions/74442/when-should-i-use-calldata-and-when-should-i-use-memory#:~:text=To%20answer%20your%20question%20directly,an%20external%20function's%20dynamic%20parameters.
+
+***BROWNIE CLI CONFIG***
+
+***OTHER WEB3 CONFIGS***
+chain ids are listed on chainid.network (they are standard configured stuff)
+
+***CONNECT WALLET TO FRONT END***
+https://www.youtube.com/watch?v=pdsYCkUWrgQ
+ - same guy! Patrick Collins
+https://docs.metamask.io/guide/ethereum-provider.html#table-of-contents
+https://www.npmjs.com/package/@metamask/detect-provider
+
+***NEXT JS***
+https://jools.dev/nextjs-_appjs-example
+ - what _appjs does
+https://nextjs.org/docs/routing/introduction
+ - how to route stuff
+https://reactjs.org/docs/context.html#when-to-use-context
+ - Context for React
+https://nextjs.org/docs/basic-features/data-fetching/get-static-props
+ - get static props
+https://stackoverflow.com/questions/68891963/loading-content-from-a-static-json-next-js
+ - Load data from a static json (need this for the contract!)
+https://nextjs.org/docs/api-reference/next/router
+ - Redirecting with clicks without Link component
+https://nextjs.org/docs/routing/dynamic-routes
+ - Dynamic routing
+
+---DJANGO SECTION---
+(I've shifted this to next, so I don't need these except for future reference anymore)
+
+***INSTALLATION***
+https://docs.djangoproject.com/en/4.0/howto/windows/
+ - Use "> pip install ..." instead of "> py -m pip install ..." so that everything is local.
+
+***DATABASE***
+https://stackpython.medium.com/how-to-start-django-project-with-a-database-postgresql-aaa1d74659d8
+https://docs.djangoproject.com/en/4.0/ref/databases/#postgresql-notes
+
+***DEBUGGING***
+https://stackoverflow.com/questions/63552207/how-to-use-node-modules-with-django
+ - how to connect node modules to django
+
+ ***PIP INSTALLS***
+ - Django
+ - colorama
+ - eth-brownie

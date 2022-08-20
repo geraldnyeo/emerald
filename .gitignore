@@ -12,6 +12,9 @@
 /.next/
 /out/
 
+# brownie
+/brownie_src
+
 # production
 /build
 

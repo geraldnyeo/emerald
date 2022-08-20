@@ -1,0 +1,223 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+export default function Pool(props) {
+    const router = useRouter();
+    const { addr: poolAddr } = router.query;
+
+    const { _web3api } = props;
+    const { isConnected, getUserAddress, execute, destroyPool, getPool, deposit, withdraw } = _web3api;
+    
+    const [depositUp, setDepositUp] = useState(false); // disable buttons when popup for deposit/withdraw
+    const [withdrawUp, setWithdrawUp] = useState(false); // disable buttons when popup for deposit/withdraw
+    const [joined, setJoined] = useState(-1);
+    const [data, setData] = useState({
+        "name": "",
+        "balance": 0,
+        "members": []
+    })
+    const [amount, setAmount] = useState(0);
+
+    useEffect(() => {
+        getPoolData();
+        getJoinStatus();
+    })
+
+    async function getPoolData() {
+        const { name, open, balance, addresses, admins, balances } = await execute(getPool, poolAddr);
+        let _data = {
+            "name": String(name),
+            "open": open,
+            "balance": parseInt(balance),
+        };
+        
+        // check consistency of data
+        if (!addresses.length == admins.length || !addresses.length == balances.length) {
+            alert("Error occured on the backend: please notify developers.");
+        }
+
+        let member;
+        const members = [];
+        for (let i = 0; i < addresses.length; i++) {
+            member = {
+                "address": String(addresses[i]),
+                "admin": admins[i],
+                "balance": parseInt(balances[i])
+            }
+            members.push(member);
+        }
+
+        _data["members"] = members;
+        setData(_data);
+    }
+
+    async function getJoinStatus() {
+        const address = await getUserAddress();
+        for (let i = 0; i < data.members.length; i++) {
+            if (address == data.members[i].address) {
+                setJoined(i);
+            }
+        }
+    }
+
+    // may want to merge state management for deposit and withdraw
+    async function toggleDeposit() {
+        setDepositUp(!depositUp);
+        if (!depositUp) {
+            setAmount(0);
+        }
+    }
+
+    async function toggleWithdraw() {
+        setWithdrawUp(!withdrawUp);
+        if (!withdrawUp) {
+            setAmount(0);
+        }
+    }
+
+    async function handleAmount(event) {
+        if (!event.target.value) {
+            setAmount(0);
+        } else {
+            setAmount(parseInt(event.target.value));
+        }
+    }
+
+    async function handleDeposit() {
+        const args = {
+            value: amount,
+        }
+        await execute(deposit, poolAddr, args);
+        toggleDeposit();
+    }
+
+    async function handleWithdraw() {
+         const args = {
+            value: amount,
+        }
+        await execute(withdraw, poolAddr, args);
+        toggleWithdraw();
+    }
+
+    async function handleDestroy() {
+        const args = {
+            address: poolAddr
+        }
+        await execute(destroyPool, undefined, args);
+        router.push("/pools");
+    }
+
+    let memberList = data.members.map((member, index) => {
+        return (
+            <tr key={index}>
+                <td className="p-1">{index}</td>
+                <td className="p-1">{member.address}</td>
+                <td className="p-1">{member.balance}</td>
+                <td className="p-1">{member.admin ? "Yes" : "No"}</td>
+            </tr>
+        )
+    })
+
+    const depositBox = () => { 
+        return (
+            <div className="p-10 border border-gray-700 bg-white z-1 fixed m-auto inset-x-0 inset-y-0 w-fit h-fit">
+                <h3 className="font-bold text-xl mb-3">Deposit</h3>
+                <form onSubmit={(event) => event.preventDefault()}> {/* TODO: DEBUG. Not sure why this is not working. */}
+                    <label>Amount to deposit (ETH - in WEI):</label>
+                    <input type="text" value={amount} onChange={handleAmount} className="px-2"></input>
+                    <button type="submit" onClick={handleDeposit}>Deposit</button>
+                </form>
+                <button onClick={() => toggleDeposit()}>Cancel</button>
+            </div>
+        )
+    }
+
+    const withdrawBox = () => { 
+        return (
+            <div className="p-10 border border-gray-700 bg-white z-1 fixed m-auto inset-x-0 inset-y-0 w-fit h-fit">
+                <h3 className="font-bold text-xl mb-3">Withdraw</h3>
+                <form onSubmit={(event) => event.preventDefault()}> {/* TODO: DEBUG. Not sure why this is not working. */}
+                    <label>Amount to withdraw (ETH - in WEI)</label>
+                    <input type="text" value={amount} onChange={handleAmount}></input>
+                    <button type="submit" onClick={handleWithdraw}>Withdraw</button>
+                </form>
+                <button onClick={() => toggleWithdraw()}>Cancel</button>
+            </div>
+        )
+    }
+
+    return (
+       <div>
+            {isConnected ?
+                <div>
+                    <h2 className="text-4xl mb-2">{data.name}</h2>
+                    <p>{poolAddr}</p>
+
+                    <br></br>
+
+                    <div className="flex">
+                        <div className="flex-1 shadow-md p-3 border border-gray-700 m-3">
+                            <h3 className="text-lg font-bold">Balance</h3>
+                            <p>Pool total: {data.balance}</p>
+                        </div>
+
+                        <div className="flex-1 shadow-md p-3 border border-gray-700 m-3">
+                            <h3 className="text-lg font-bold">Members</h3>
+                            <p>{data.members.length}</p>
+                        </div>
+                    </div>
+
+                    <br></br>
+
+                    {(joined !== -1) ?
+                        <div className="flex shadow-md p-3 border border-gray-700 m-3">
+                            <div className="flex-grow">
+                                <p className="font-bold text-lg">Your total: {data.members[joined].balance}</p>
+                            </div>
+                            <button onClick={() => toggleDeposit()} className="mx-3 text-emerald">Deposit</button>
+                            <button onClick={() => toggleWithdraw()} className="mx-3 text-emerald">Withdraw</button>
+                        </div>
+                    :
+                        <>
+                            <button>Join</button>
+                        </>
+                    }
+
+                    <br></br>
+                    <br></br>
+
+                    <h3 className="text-xl font-bold">Members</h3>
+                    <hr className="m-1"></hr>
+                    <table className="table-auto w-screen text-left border-spacing-2">
+                        <thead>
+                        <tr>
+                            <th className="p-1"></th>
+                            <th className="p-1">Address</th>
+                            <th className="p-1">Balance</th>
+                            <th className="p-1">Admin</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {memberList}
+                        </tbody>
+                    </table>
+
+                    <br></br>
+
+                    <h3 className="text-lg font-bold mb-1">Settings</h3>
+                    <div>
+                        <p className="px-2 py-1">Open: {data.open ? "Yes" : "No"}</p>
+
+                        <button onClick={() => handleDestroy()} className="px-2 py-1 text-red-500">Destroy Pool</button>
+                    </div>
+
+                    {/*Popups for deposit and withdraw*/}
+                    {depositUp ? <> {depositBox()} </> : <></> }
+                    {withdrawUp ? <> {withdrawBox()} </> : <></> }
+                </div>
+            :
+                <p>Please connect to Metamask!</p>
+            }
+        </div>
+    )
+}
