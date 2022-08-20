@@ -1,3 +1,6 @@
+***TODO***
+Fix the gitignore file and git updating thingy
+
 ***BROWNIE***
 https://www.youtube.com/watch?v=M576WGiDBdQ
 https://n4n0b1t3.medium.com/running-brownie-on-windows-in-a-virtual-environment-without-encountering-cytoolz-errors-d0095fad905
