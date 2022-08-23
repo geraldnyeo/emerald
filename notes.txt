@@ -37,6 +37,12 @@ https://nextjs.org/docs/api-reference/next/router
  - Redirecting with clicks without Link component
 https://nextjs.org/docs/routing/dynamic-routes
  - Dynamic routing
+https://elements.heroku.com/buildpacks/mars/heroku-nextjs
+ - How to deploy to heroku with Next
+
+***DEBUGGING***
+https://devcenter.heroku.com/articles/heroku-22-stack
+ - See OpenSSL
 
 ---DJANGO SECTION---
 (I've shifted this to next, so I don't need these except for future reference anymore)
