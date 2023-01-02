@@ -23,7 +23,7 @@ export default function Help(props) {
                         className="pl-1 underline text-emerald">
                         getting started with metamask
                     </a>
-                    . If you still require any help, we&apos;ll update this page <i>"soon..."</i>
+                    . If you still require any help, we&apos;ll update this page <i>&quot;soon...&quot;</i>
                 </p>
                 <p></p>
                 <br></br>
