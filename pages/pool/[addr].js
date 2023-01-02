@@ -6,15 +6,17 @@ export default function Pool(props) {
     const { addr: poolAddr } = router.query;
 
     const { _web3api } = props;
-    const { isConnected, getUserAddress, execute, destroyPool, getPool, deposit, withdraw } = _web3api;
+    const { isConnected, getUserAddress, execute, destroyPool, getPool, getJoinQueue, deposit, withdraw, join, leave, removePooler } = _web3api;
     
     const [depositUp, setDepositUp] = useState(false); // disable buttons when popup for deposit/withdraw
     const [withdrawUp, setWithdrawUp] = useState(false); // disable buttons when popup for deposit/withdraw
     const [joined, setJoined] = useState(-1);
+    const [admin, setAdmin] = useState(false);
     const [data, setData] = useState({
         "name": "",
         "balance": 0,
-        "members": []
+        "members": [],
+        "joinQueue": [],
     })
     const [amount, setAmount] = useState(0);
 
@@ -48,6 +50,9 @@ export default function Pool(props) {
         }
 
         _data["members"] = members;
+
+        const joinQueueAddresses = await execute(getJoinQueue, poolAddr);
+        _data["joinQueue"] = joinQueueAddresses;
         setData(_data);
     }
 
@@ -56,6 +61,9 @@ export default function Pool(props) {
         for (let i = 0; i < data.members.length; i++) {
             if (address == data.members[i].address) {
                 setJoined(i);
+                if (data.members[i].admin) {
+                    setAdmin(true);
+                }
             }
         }
     }
@@ -83,6 +91,14 @@ export default function Pool(props) {
         }
     }
 
+    async function handleJoin(event) {
+        await execute(join, poolAddr);
+    }
+
+    async function handleLeave(event) {
+        await execute(leave, poolAddr);
+    }
+
     async function handleDeposit() {
         const args = {
             value: amount,
@@ -107,13 +123,37 @@ export default function Pool(props) {
         router.push("/pools");
     }
 
+    async function handleKick(poolerAddr) {
+        const args = {
+            poolerAddr: poolerAddr
+        }
+        await execute(removePooler, poolAddr, args);
+    }
+
     let memberList = data.members.map((member, index) => {
         return (
             <tr key={index}>
                 <td className="p-1">{index}</td>
                 <td className="p-1">{member.address}</td>
                 <td className="p-1">{member.balance}</td>
-                <td className="p-1">{member.admin ? "Yes" : "No"}</td>
+                <td className="p-1">{member.admin ? "Admin" : "Member"}</td>
+                {(admin) ? 
+                    <td className="p-1"><button onClick={() => handleKick(member.address)}>Kick</button></td>
+                : <></>}
+            </tr>
+        )
+    })
+
+    let joinList = data.joinQueue.map((joiner, index) => {
+        return (
+            <tr key={index}>
+                <td className="p-1"></td>
+                <td className="p-1 text-red-500">{joiner}</td>
+                <td className="p-1">N.A.</td>
+                <td className="p-1">Joining...</td>
+                {(admin) ?
+                    <td className="p-1">Accept</td>
+                : <></> }
             </tr>
         )
     })
@@ -155,6 +195,7 @@ export default function Pool(props) {
 
                     <br></br>
 
+                    {/* Main Stats */}
                     <div className="flex">
                         <div className="flex-1 shadow-md p-3 border border-gray-700 m-3">
                             <h3 className="text-lg font-bold">Balance</h3>
@@ -170,41 +211,54 @@ export default function Pool(props) {
                     <br></br>
 
                     {(joined !== -1) ?
-                        <div className="flex shadow-md p-3 border border-gray-700 m-3">
-                            <div className="flex-grow">
-                                <p className="font-bold text-lg">Your total: {data.members[joined].balance}</p>
-                            </div>
-                            <button onClick={() => toggleDeposit()} className="mx-3 text-emerald">Deposit</button>
-                            <button onClick={() => toggleWithdraw()} className="mx-3 text-emerald">Withdraw</button>
-                        </div>
-                    :
                         <>
-                            <button>Join</button>
+                            <div className="flex shadow-md p-3 border border-gray-700 m-3">
+                                <div className="flex-grow">
+                                    <p className="font-bold text-lg">Your total: {data.members[joined].balance}</p>
+                                </div>
+                                <button onClick={() => toggleDeposit()} className="mx-3 text-emerald">Deposit</button>
+                                <button onClick={() => toggleWithdraw()} className="mx-3 text-emerald">Withdraw</button>
+                            </div>
                         </>
-                    }
+                    : <></> }
 
                     <br></br>
                     <br></br>
 
+                    {/* Members */}
                     <h3 className="text-xl font-bold">Members</h3>
                     <hr className="m-1"></hr>
-                    <table className="table-auto w-screen text-left border-spacing-2">
+                    <table className="table-auto w-full text-left border-spacing-2">
                         <thead>
                         <tr>
                             <th className="p-1"></th>
                             <th className="p-1">Address</th>
                             <th className="p-1">Balance</th>
-                            <th className="p-1">Admin</th>
+                            <th className="p-1">Status</th>
+                            {(admin) ? 
+                                <th className="p-1">Edit</th>
+                            : <></>}
                         </tr>
                         </thead>
                         <tbody>
                             {memberList}
+                            {joinList}
                         </tbody>
                     </table>
 
                     <br></br>
 
+                    {/* Settings */}
                     <h3 className="text-lg font-bold mb-1">Settings</h3>
+                    {(joined !== -1) ?
+                        <>
+                            <button onClick={() => handleLeave()} className="px-2 py-1 text-emerald">Leave</button>
+                        </>
+                    :
+                        <>
+                            <button onClick={() => handleJoin()} className="px-2 py-1 text-emerald">Join</button>
+                        </>
+                    }
                     <div>
                         <p className="px-2 py-1">Open: {data.open ? "Yes" : "No"}</p>
 

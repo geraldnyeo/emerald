@@ -22,6 +22,13 @@ https://www.youtube.com/watch?v=pdsYCkUWrgQ
 https://docs.metamask.io/guide/ethereum-provider.html#table-of-contents
 https://www.npmjs.com/package/@metamask/detect-provider
 
+***GOERLI NETWORK***
+ - Had to move to Goerli because Rinkeby is deprecated after the Merge. 
+https://blog.cryptostars.is/goerli-g%C3%B6rli-testnet-network-to-metamask-and-receiving-test-ethereum-in-less-than-2-min-de13e6fe5677
+https://goerli-faucet.mudit.blog/
+ - "Twitter account too new"
+https://www.alchemy.com/overviews/goerli-faucet
+
 ***NEXT JS***
 https://jools.dev/nextjs-_appjs-example
  - what _appjs does
@@ -59,7 +66,10 @@ https://docs.djangoproject.com/en/4.0/ref/databases/#postgresql-notes
 https://stackoverflow.com/questions/63552207/how-to-use-node-modules-with-django
  - how to connect node modules to django
 
- ***PIP INSTALLS***
+***PIP INSTALLS***
  - Django
  - colorama
  - eth-brownie
+
+***GIT***
+DO NOT "git rm"! IT WILL DELETE THE ACTUAL FILE!

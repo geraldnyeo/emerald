@@ -32,7 +32,7 @@ export default function Create(props) {
             "open": settings.open,
             "address": address
         }
-        await execute(createPool, undefined, args)
+        await execute(createPool, undefined, args);
         router.push("/pools");
     }
 

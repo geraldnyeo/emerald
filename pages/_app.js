@@ -87,19 +87,34 @@ function MyApp({ Component, pageProps }) {
     return { name, open, balance, addresses, admins, balances };
  }
 
- async function deposit(contract, {value}={}) {
-  const options = {
-    value: ethers.utils.parseUnits(String(value), "wei")
+ async function getJoinQueue(contract) {
+  const addresses = await contract.getJoinQueue();
+  return addresses;
+ }
+
+  async function deposit(contract, {value}={}) {
+    const options = {
+      value: ethers.utils.parseUnits(String(value), "wei")
+    }
+    await contract.deposit(options);
   }
-  await contract.deposit(options);
- }
 
- async function withdraw(contract, {value}={}) {
-  const amount = ethers.utils.parseUnits(String(value), "wei");
-  await contract.withdraw(amount);
- }
+  async function withdraw(contract, {value}={}) {
+    const amount = ethers.utils.parseUnits(String(value), "wei");
+    await contract.withdraw(amount);
+  }
 
-  // TODO: Generalise the 'window.ethereum !== undefined' clause
+  async function join(contract) {
+    await contract.join();
+  }
+
+  async function leave(contract) {
+    await contract.leave();
+  }
+
+  async function removePooler(contract, {poolerAddr}={}) {
+    await contract.removePooler(poolerAddr);
+  }
 
   const _web3api = {
     isConnected,
@@ -110,8 +125,12 @@ function MyApp({ Component, pageProps }) {
     listPools,
     destroyPool,
     getPool,
+    getJoinQueue,
     deposit,
     withdraw,
+    join,
+    leave,
+    removePooler,
   }
 
   return (
