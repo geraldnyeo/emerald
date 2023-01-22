@@ -6,31 +6,38 @@ export default function Pool(props) {
     const { addr: poolAddr } = router.query;
 
     const { _web3api } = props;
-    const { isConnected, getUserAddress, execute, destroyPool, getPool, getJoinQueue, deposit, withdraw, join, leave, removePooler } = _web3api;
+    const { isConnected, getUserAddress, execute, destroyPool, getPool, getJoinQueue, deposit, withdraw, join, cancelJoin,
+        leave, removePooler, acceptPooler, makeAdmin, removeAdmin, } = _web3api;
     
     const [depositUp, setDepositUp] = useState(false); // disable buttons when popup for deposit/withdraw
     const [withdrawUp, setWithdrawUp] = useState(false); // disable buttons when popup for deposit/withdraw
+    const [address, setAddress] = useState(undefined);
+    const [joining, setJoining] = useState(-1);
     const [joined, setJoined] = useState(-1);
     const [admin, setAdmin] = useState(false);
     const [data, setData] = useState({
         "name": "",
+        "open": true,
         "balance": 0,
+        "creator": "",
         "members": [],
         "joinQueue": [],
     })
     const [amount, setAmount] = useState(0);
 
+    let refresh = 0; // TODO: Implement a refresh to refresh whenever a change is made.
     useEffect(() => {
         getPoolData();
         getJoinStatus();
     })
 
     async function getPoolData() {
-        const { name, open, balance, addresses, admins, balances } = await execute(getPool, poolAddr);
+        const { name, open, balance, creator, addresses, admins, balances } = await execute(getPool, poolAddr);
         let _data = {
             "name": String(name),
             "open": open,
             "balance": parseInt(balance),
+            "creator": String(creator),
         };
         
         // check consistency of data
@@ -57,13 +64,23 @@ export default function Pool(props) {
     }
 
     async function getJoinStatus() {
-        const address = await getUserAddress();
+        const addr = await getUserAddress();
+        setAddress(addr);
+
+        // Check if user has joined
         for (let i = 0; i < data.members.length; i++) {
             if (address == data.members[i].address) {
                 setJoined(i);
                 if (data.members[i].admin) {
                     setAdmin(true);
                 }
+            }
+        }
+
+        // Check if user is in the join queue
+        for (let i = 0; i < data.joinQueue.length; i++) {
+            if (address == data.joinQueue[i]) {
+                setJoining(i);
             }
         }
     }
@@ -91,11 +108,15 @@ export default function Pool(props) {
         }
     }
 
-    async function handleJoin(event) {
+    async function handleJoin() {
         await execute(join, poolAddr);
     }
 
-    async function handleLeave(event) {
+    async function handleCancelJoin() {
+        await execute(cancelJoin, poolAddr);
+    }
+
+    async function handleLeave() {
         await execute(leave, poolAddr);
     }
 
@@ -130,13 +151,38 @@ export default function Pool(props) {
         await execute(removePooler, poolAddr, args);
     }
 
+    async function handleAccept(poolerAddr) {
+        const args = {
+            poolerAddr: poolerAddr
+        }
+        await execute(acceptPooler, poolAddr, args);
+    }
+
+    async function handleMakeAdmin(poolerAddr) {
+        const args = {
+            poolerAddr: poolerAddr
+        }
+        await execute(makeAdmin, poolAddr, args);
+    }
+
+    async function handleRemoveAdmin(poolerAddr) {
+        const args = {
+            poolerAddr: poolerAddr
+        }
+        await execute(removeAdmin, poolAddr, args);
+    }
+
     let memberList = data.members.map((member, index) => {
         return (
             <tr key={index}>
                 <td className="p-1">{index}</td>
                 <td className="p-1">{member.address}</td>
                 <td className="p-1">{member.balance}</td>
-                <td className="p-1">{member.admin ? "Admin" : "Member"}</td>
+                <td className="p-1">
+                    <button onClick={member.admin ? () => handleRemoveAdmin(member.address) : () => handleMakeAdmin(member.address)}>
+                        {member.admin ? "Admin" : "Member"}
+                    </button>
+                </td>
                 {(admin) ? 
                     <td className="p-1"><button onClick={() => handleKick(member.address)}>Kick</button></td>
                 : <></>}
@@ -152,7 +198,7 @@ export default function Pool(props) {
                 <td className="p-1">N.A.</td>
                 <td className="p-1">Joining...</td>
                 {(admin) ?
-                    <td className="p-1">Accept</td>
+                    <td className="p-1"><button onClick={() => handleAccept(joiner)}>Accept</button></td>
                 : <></> }
             </tr>
         )
@@ -167,7 +213,7 @@ export default function Pool(props) {
                     <input type="text" value={amount} onChange={handleAmount} className="px-2"></input>
                     <button type="submit" onClick={handleDeposit}>Deposit</button>
                 </form>
-                <button onClick={() => toggleDeposit()}>Cancel</button>
+                <button onClick={toggleDeposit}>Cancel</button>
             </div>
         )
     }
@@ -181,9 +227,31 @@ export default function Pool(props) {
                     <input type="text" value={amount} onChange={handleAmount}></input>
                     <button type="submit" onClick={handleWithdraw}>Withdraw</button>
                 </form>
-                <button onClick={() => toggleWithdraw()}>Cancel</button>
+                <button onClick={toggleWithdraw}>Cancel</button>
             </div>
         )
+    }
+
+    const renderJoinBtn = () => {
+        if (joined !== -1) {
+            return (
+                <>
+                    <button onClick={handleLeave} className="px-2 py-1 text-emerald">Leave</button>
+                </>
+            )
+        } else if (joining !== -1) {
+            return (
+                <>
+                    <button onClick={handleCancelJoin} className="px-2 py-1 text-emerald">Cancel Join</button>
+                </>
+            )
+        } else {
+            return (
+                <>
+                    <button onClick={handleJoin} className="px-2 py-1 text-emerald">Join</button>
+                </>
+            )
+        }
     }
 
     return (
@@ -216,8 +284,8 @@ export default function Pool(props) {
                                 <div className="flex-grow">
                                     <p className="font-bold text-lg">Your total: {data.members[joined].balance}</p>
                                 </div>
-                                <button onClick={() => toggleDeposit()} className="mx-3 text-emerald">Deposit</button>
-                                <button onClick={() => toggleWithdraw()} className="mx-3 text-emerald">Withdraw</button>
+                                <button onClick={toggleDeposit} className="mx-3 text-emerald">Deposit</button>
+                                <button onClick={toggleWithdraw} className="mx-3 text-emerald">Withdraw</button>
                             </div>
                         </>
                     : <></> }
@@ -250,19 +318,11 @@ export default function Pool(props) {
 
                     {/* Settings */}
                     <h3 className="text-lg font-bold mb-1">Settings</h3>
-                    {(joined !== -1) ?
-                        <>
-                            <button onClick={() => handleLeave()} className="px-2 py-1 text-emerald">Leave</button>
-                        </>
-                    :
-                        <>
-                            <button onClick={() => handleJoin()} className="px-2 py-1 text-emerald">Join</button>
-                        </>
-                    }
+                    {renderJoinBtn()}
                     <div>
                         <p className="px-2 py-1">Open: {data.open ? "Yes" : "No"}</p>
 
-                        <button onClick={() => handleDestroy()} className="px-2 py-1 text-red-500">Destroy Pool</button>
+                        <button onClick={handleDestroy} className="px-2 py-1 text-red-500">Destroy Pool</button>
                     </div>
 
                     {/*Popups for deposit and withdraw*/}

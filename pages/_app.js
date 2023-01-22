@@ -83,8 +83,9 @@ function MyApp({ Component, pageProps }) {
     const name = await contract.name();
     const open = await contract.open();
     const balance = await contract.getPool();
+    const creator = await contract.creator();
     const [ addresses, admins, balances ] = await contract.getPoolers();
-    return { name, open, balance, addresses, admins, balances };
+    return { name, open, balance, creator, addresses, admins, balances };
  }
 
  async function getJoinQueue(contract) {
@@ -108,12 +109,28 @@ function MyApp({ Component, pageProps }) {
     await contract.join();
   }
 
+  async function cancelJoin(contract) {
+    await contract.cancelJoin();
+  }
+
   async function leave(contract) {
     await contract.leave();
   }
 
   async function removePooler(contract, {poolerAddr}={}) {
     await contract.removePooler(poolerAddr);
+  }
+
+  async function acceptPooler(contract, {poolerAddr}={}) {
+    await contract.acceptPooler(poolerAddr);
+  }
+
+  async function makeAdmin(contract, {poolerAddr}={}) {
+    await contract.makeAdmin(poolerAddr);
+  }
+
+  async function removeAdmin(contract, {poolerAddr}={}) {
+    await contract.removeAdmin(poolerAddr);
   }
 
   const _web3api = {
@@ -129,8 +146,12 @@ function MyApp({ Component, pageProps }) {
     deposit,
     withdraw,
     join,
+    cancelJoin,
     leave,
     removePooler,
+    acceptPooler,
+    makeAdmin,
+    removeAdmin,
   }
 
   return (
