@@ -42,7 +42,7 @@ export default function About(props) {
                 </p>
                 <ul className="list-disc pl-10">
                     <li>Withdraw more than your deposited amount. So this app can do what it was supposed to.</li>
-                    <li>Refresh button. You don&apos;t know it, but there's some real poor code behind the scenes, which could lag
+                    <li>Refresh button. You don&apos;t know it, but there&apos;s some real poor code behind the scenes, which could lag
                         your browser.
                     </li>
                 </ul>
