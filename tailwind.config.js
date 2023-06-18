@@ -10,6 +10,10 @@ module.exports = {
         'emerald': '#1ab188',
       }
     },
+    fontFamily: {
+      'roboto': ['Roboto', 'sans-serif'],
+      'open-sans': ['Open Sans', 'sans-serif'],
+    }
   },
   plugins: [],
 }
