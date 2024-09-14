@@ -24,12 +24,12 @@ export default function About(props) {
                 <br></br>
 
                 <h2 className="text-3xl font-bold mb-2 text-emerald">Notes on the Demo</h2>
-                <p classname="mb-2">
+                <p className="mb-2">
                     This website is only a demo project, created as a fun way for me to learn about smart contracts. 
                     Some functions are not working properly, and others have fallen into disrepair as a result of  
                     large changes to Ethereum after the adoption of the proof-of-stake system.
                 </p>
-                <p classname="mb-2">
+                <p className="mb-2">
                     The demo only works on the Ethereum Sepolia test network. Gas prices are also far too
                     expensive to make this project viable.
                 </p>
@@ -49,7 +49,7 @@ export default function About(props) {
                     </li>
                 </ul>
                 <br />
-                <p classname="mb-2">
+                <p className="mb-2">
                     You can find my portfolio 
                         <a href="https://portfolio-geraldnyeo.vercel.app"
                             className="pl-1 underline text-emerald">
