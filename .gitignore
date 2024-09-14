@@ -13,7 +13,8 @@
 /out/
 
 # brownie
-/brownie_src
+/brownie_src/build
+/brownie_src/.env
 
 # production
 /build

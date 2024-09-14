@@ -13,7 +13,7 @@ export default function Help(props) {
                 </p>
                 <br></br>
 
-                <h3 className="text-xl font-bold mb-2">So, how do I start an account?</h3>
+                <h3 className="text-xl font-bold mb-2">How do I start an account?</h3>
                 <p>
                     Instead of traditional authentication, Emerald uses Metamask to verify its users. You don&apos;t need an account - 
                     just a Metamask wallet!
@@ -25,16 +25,16 @@ export default function Help(props) {
                         className="pl-1 underline text-emerald">
                         getting started with metamask
                     </a>
-                    . If you still require any help, we&apos;ll update this page <i>&quot;soon...&quot;</i>
+                    .
                 </p>
                 <p></p>
                 <br></br>
 
                 <h3 className="text-xl font-bold mb-2">I don&apos;t have any ETH...</h3>
                 <p>
-                    Don&apos;t worry! Currently, Emerald is only running on the Goerli Test Network, for testing purposes. You can 
+                    Don&apos;t worry! Currently, Emerald is only running on the Sepolia Test Network, for testing purposes. You can 
                     get ETH on this network for free!
-                    <a href="https://www.alchemy.com/overviews/goerli-faucet"
+                    <a href="https://cloud.google.com/application/web3/faucet/ethereum/sepolia"
                         className="pl-1 underline text-emerald">
                         Here&apos;s how
                     </a>
@@ -44,15 +44,14 @@ export default function Help(props) {
                     Will I have to invest in Ether in the future?
                 </p>
                 <p>
-                    Nope. The developers here at Emerald are really, really lazy. We&apos;ll probably never release a proper version
-                    of Emerald. So have fun with your fake money!
+                    This will most likely stay as a demo project, so, no.
                 </p>
                 <br></br>
 
                 <h3 className="text-xl font-bold mb-2">Help! It isn&apos;t working!</h3>
                 <h4 className="font-bold my-2">Check your Metamask network</h4>
                 <p>
-                    Currently, Emerald is only running on the Goerli Test Network - did you remember to switch your network?
+                    Currently, Emerald is only running on the Sepolia Test Network - did you remember to switch your network?
                 </p>
                 <br></br>
             </div>
@@ -62,6 +61,8 @@ export default function Help(props) {
 
                 <h3 className="text-xl font-bold mb-2"></h3>
                 <p>
+                    This section is for common issues and FAQ relating to usage of our platform.
+                    It will be updated accordingly when new issues appear.
                 </p>
                 <br></br>
             </div>
