@@ -18,9 +18,6 @@ export default function About(props) {
                     To prevent abuse of the pool system, there are plans for withdrawal amounts will be restricted based on past contributions and
                     users with negative balance will not be allowed to withdraw until they have repaid in full. 
                 </p>
-                <p className="mt-2">
-                    Oh, and, for fun, because I love coding random crap.
-                </p>
                 <br></br>
 
                 <h2 className="text-3xl font-bold mb-2 text-emerald">Notes on the Demo</h2>
